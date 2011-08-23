@@ -126,7 +126,6 @@ int main(int argc, char *argv[])
 		unlockFile(fd);
 		return 0;
     } else {
-    	cout << "failed to get lock" << endl;
     	return 1;
     }
 
