@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    if (lockFile(fd, offset, length)) {
+    if (!lockFile(fd, offset, length)) {
 		cout << "Holding lock for " << holdTime << " seconds." << endl;
 		sleep(holdTime);
 		unlockFile(fd);
