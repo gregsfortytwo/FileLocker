@@ -32,7 +32,7 @@
 
 using namespace std;
 
-void lockFile(int fd, int l_start, int l_len)
+int lockFile(int fd, int l_start, int l_len)
 {
     struct flock lock;
     
@@ -46,11 +46,14 @@ void lockFile(int fd, int l_start, int l_len)
     if (fcntl(fd, F_SETLKW, &lock) == 0)
     {
         cout << "Got lock" << endl;
+        return 0;
     }
     else
     {
         cerr << "Failed to get lock (" << strerror(errno) << ")" << endl;
+        return 1;
     }
+    return 1;
 }
 
 void unlockFile(int fd)
@@ -117,10 +120,15 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    lockFile(fd, offset, length);
-    cout << "Holding lock for " << holdTime << " seconds." << endl;
-    sleep(holdTime);
-    unlockFile(fd);
+    if (lockFile(fd, offset, length)) {
+		cout << "Holding lock for " << holdTime << " seconds." << endl;
+		sleep(holdTime);
+		unlockFile(fd);
+		return 0;
+    } else {
+    	cout << "failed to get lock" << endl;
+    	return 1;
+    }
 
-    return 0;
+    return 1;
 }
