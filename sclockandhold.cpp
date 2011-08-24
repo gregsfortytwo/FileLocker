@@ -35,6 +35,7 @@ using namespace std;
 int lockFile(int fd, int l_start, int l_len)
 {
     struct flock lock;
+    bool stop = false;
     
     lock.l_type = F_WRLCK;
     lock.l_whence = SEEK_SET;
@@ -43,15 +44,17 @@ int lockFile(int fd, int l_start, int l_len)
     lock.l_pid = 0;
 
     cout << "Trying to get lock" << endl;
-    if (fcntl(fd, F_SETLKW, &lock) == 0)
-    {
-        cout << "Got lock" << endl;
-        return 0;
-    }
-    else
-    {
-        cerr << "Failed to get lock (" << strerror(errno) << ")" << endl;
-        return 1;
+    while (!stop) {
+		if (fcntl(fd, F_SETLKW, &lock) == 0)
+		{
+			cout << "Got lock" << endl;
+			return 0;
+		}
+		else if (errno != EINTR)
+		{
+			cerr << "Failed to get lock (" << strerror(errno) << ")" << endl;
+			return 1;
+		}
     }
     return 1;
 }
