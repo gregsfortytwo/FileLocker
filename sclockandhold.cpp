@@ -59,14 +59,14 @@ int lockFile(int fd, int l_start, int l_len)
     return 1;
 }
 
-void unlockFile(int fd)
+void unlockFile(int fd, int l_start, int l_len)
 {
     struct flock lock;
     
     lock.l_type = F_UNLCK;
     lock.l_whence = SEEK_SET;
-    lock.l_start = 0;
-    lock.l_len = 1;
+    lock.l_start = l_start;
+    lock.l_len = l_len;
     lock.l_pid = 0;
 
     cout << "Unlocking" << endl;
@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
     if (!lockFile(fd, offset, length)) {
 		cout << "Holding lock for " << holdTime << " seconds." << endl;
 		sleep(holdTime);
-		unlockFile(fd);
+		unlockFile(fd, offset, length);
 		return 0;
     } else {
     	return 1;
